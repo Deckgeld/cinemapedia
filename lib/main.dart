@@ -1,10 +1,16 @@
 //Primero son las importaciones de dart -> Importaciones de flutter -> Importaciones de paquetes de terceros -> Importaciones de archivos propios
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:cinemapedia/config/router/app_router.dart';
 import 'package:cinemapedia/config/theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: '.env');
+  
   runApp(const MainApp());
 }
 
