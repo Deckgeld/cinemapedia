@@ -1,0 +1,1 @@
+export 'package:cinemapedia/presentation/screen/movies/home.dart';
