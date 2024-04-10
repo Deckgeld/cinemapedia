@@ -1,1 +1,1 @@
-export 'package:cinemapedia/presentation/screen/movies/home.dart';
+export 'package:cinemapedia/presentation/screen/movies/home_screen.dart';
