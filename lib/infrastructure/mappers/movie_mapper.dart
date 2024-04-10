@@ -18,7 +18,8 @@ class MovieMapper {
       //Validamos si el posterPath es vacio para asignar una imagen por defecto
       posterPath: (movieDB.posterPath != '')
         ? 'https://image.tmdb.org/t/p/w500/${movieDB.backdropPath}' 
-        : 'https://ih1.redbubble.net/image.1027712254.9762/pp,840x830-pad,1000x1000,f8f8f8.u2.jpg',
+        //Esto no sirve para filtrar las peliculas, dentro de moviedb_datasource.dart
+        : 'no-poster',
       releaseDate: movieDB.releaseDate,
       title: movieDB.title,
       video: movieDB.video,

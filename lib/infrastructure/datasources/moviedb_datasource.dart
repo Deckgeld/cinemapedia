@@ -1,7 +1,11 @@
+import 'package:dio/dio.dart';
+
 import 'package:cinemapedia/config/constants/enviroment.dart';
 import 'package:cinemapedia/domain/datasources/movies_datasource.dart';
+
 import 'package:cinemapedia/domain/entitites/movie.dart';
-import 'package:dio/dio.dart';
+import 'package:cinemapedia/infrastructure/mappers/movie_mapper.dart';
+import 'package:cinemapedia/infrastructure/models/moviedb_response.dart';
 
 class MoviedbDatasource extends MoviesDataSource {
   //Instalamos la dependencia de dio
@@ -15,8 +19,16 @@ class MoviedbDatasource extends MoviesDataSource {
   @override
   Future<List<Movie>> getNowPlaying({int page = 1}) async {
     final response = await dio.get('/movie/now_playing');
-    
-    final List<Movie> movies = [];
+
+    final movieDBResponse = MovieDbResponse.fromJson(response.data);
+
+    final List<Movie> movies = movieDBResponse.results
+      //Filtramos las peliculas que no tengan poster
+      .where((moviedb) => moviedb.posterPath != 'no-poster')
+      //Mapeamos las peliculas a la entidad
+      .map(
+        (movieDB) => MovieMapper.movieDBToEntity(movieDB)
+      ).toList();
 
     return movies;
   }
