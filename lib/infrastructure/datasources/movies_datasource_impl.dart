@@ -7,7 +7,7 @@ import 'package:cinemapedia/domain/entitites/movie.dart';
 import 'package:cinemapedia/infrastructure/mappers/movie_mapper.dart';
 import 'package:cinemapedia/infrastructure/models/moviedb_response.dart';
 
-class MoviedbDatasource extends MoviesDataSource {
+class MoviesDataSourceImpl extends MoviesDataSource {
   //Instalamos la dependencia de dio
   final dio = Dio(BaseOptions(
       baseUrl: 'https://api.themoviedb.org/3',
