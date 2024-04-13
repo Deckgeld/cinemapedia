@@ -93,6 +93,7 @@ class _Slide extends StatelessWidget {
                 fit: BoxFit.cover,
                 movie.posterPath,
                 width: 150,
+                height: 225,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return FadeIn(child: child);
 
