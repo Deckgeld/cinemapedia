@@ -3,7 +3,7 @@ import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:cinemapedia/domain/entitites/movie.dart';
 import 'package:flutter/material.dart';
 
-class MovieHorizontalListView extends StatelessWidget {
+class MovieHorizontalListView extends StatefulWidget {
   final List<Movie> movies;
   final String? title;
   final String? subTitle;
@@ -17,21 +17,50 @@ class MovieHorizontalListView extends StatelessWidget {
       this.loadNextPage});
 
   @override
+  State<MovieHorizontalListView> createState() =>
+      _MovieHorizontalListViewState();
+}
+
+class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+  
+    scrollController.addListener(() {
+      //Si existe la funcion loadNextPage y el scroll llega al final de la pagina, entonces cargamos la siguiente pagina
+      if (widget.loadNextPage != null &&
+      scrollController.position.pixels +200 >= scrollController.position.maxScrollExtent) {
+        widget.loadNextPage!();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 350,
       child: Column(
         children: [
-          if (title != null || subTitle != null)
-            _Title(title: title, suTitle: subTitle),
+          if (widget.title != null || widget.subTitle != null)
+            _Title(title: widget.title, suTitle: widget.subTitle),
           Expanded(
             //Cuando no podamos hacer scroll infinito usaremos un ListView.builder, de lo contrario usaremos un ListView normal
             child: ListView.builder(
+              //Agregramos el controlador de scroll
+              controller: scrollController,
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
-              itemCount: movies.length,
+              itemCount: widget.movies.length,
               itemBuilder: (BuildContext context, int index) {
-                return _Slide(movie: movies[index]);
+                return _Slide(movie: widget.movies[index]);
               },
             ),
           )
@@ -55,7 +84,6 @@ class _Slide extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           //* Image
           SizedBox(
             width: 150,
@@ -73,7 +101,6 @@ class _Slide extends StatelessWidget {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 },
-
               ),
             ),
           ),
@@ -95,18 +122,21 @@ class _Slide extends StatelessWidget {
             child: Row(
               children: [
                 Icon(Icons.star, size: 16, color: Colors.yellow.shade800),
-                Text('${movie.voteAverage}', style: textStyle.bodyMedium?.copyWith( color: Colors.yellow.shade800 ) ),
-                
+                Text('${movie.voteAverage}',
+                    style: textStyle.bodyMedium
+                        ?.copyWith(color: Colors.yellow.shade800)),
+
                 //Para poder agreagr el Spacer envolveremos el Row en un sizedBox y definirle un width
                 const Spacer(),
                 // const SizedBox(width: 10),           <--- Con lo anterior ya no necesitamos este SizedBox
-            
-                //Suistituimos una linea por otra para formatear el numero
-                Text( HumanFormats.number(movie.popularity), style: textStyle.bodySmall),
-                // Text('${movie.popularity}', style: textStyle.bodySmall),
-              ],),
-          )
 
+                //Suistituimos una linea por otra para formatear el numero
+                Text(HumanFormats.number(movie.popularity),
+                    style: textStyle.bodySmall),
+                // Text('${movie.popularity}', style: textStyle.bodySmall),
+              ],
+            ),
+          )
         ],
       ),
     );
