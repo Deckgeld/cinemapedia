@@ -32,12 +32,18 @@ class _HomeViewState extends ConsumerState<_HomeView> {
     super.initState();
 
     ref.read(nowPlayingProvider.notifier).loadNextPage();
+    ref.read(popularMoviesProvider.notifier).loadNextPage();
+    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
+    ref.read(upcomingMoviesProvider.notifier).loadNextPage();
   }
 
   @override
   Widget build(BuildContext context) {
     final nowPlayingMovies = ref.watch(nowPlayingProvider);
     final slideShowMovies = ref.watch(moviesSlideshowProvider);
+    final popularMovies = ref.watch(popularMoviesProvider);
+    final topRatedMovies = ref.watch(topRatedMoviesProvider);
+    final upcomingMovies = ref.watch(upcomingMoviesProvider);
 
     //Envolvemos la columna en un CustomScrollView para que el SliverAppBar funcione correctamente, y
     //para que se pueda hacer scroll, sin esto se desbordaria la pantalla
@@ -68,30 +74,30 @@ class _HomeViewState extends ConsumerState<_HomeView> {
                   ref.read(nowPlayingProvider.notifier).loadNextPage(),
             ),
             MovieHorizontalListView(
-              movies: nowPlayingMovies,
+              movies: upcomingMovies,
               title: 'Coming Soon',
               subTitle: 'At this month',
               loadNextPage: () =>
-                  ref.read(nowPlayingProvider.notifier).loadNextPage(),
+                  ref.read(upcomingMoviesProvider.notifier).loadNextPage(),
             ),
             MovieHorizontalListView(
-              movies: nowPlayingMovies,
+              movies: popularMovies,
               title: 'Popular Movies',
               // subTitle: 'At this month',
               loadNextPage: () =>
-                  ref.read(nowPlayingProvider.notifier).loadNextPage(),
+                  ref.read(popularMoviesProvider.notifier).loadNextPage(),
             ),
             MovieHorizontalListView(
-              movies: nowPlayingMovies,
+              movies: topRatedMovies,
               title: 'Top Rated',
               subTitle: 'Best of the best',
               loadNextPage: () =>
-                  ref.read(nowPlayingProvider.notifier).loadNextPage(),
+                  ref.read(topRatedMoviesProvider.notifier).loadNextPage(),
             ),
             const SizedBox(height: 10)
           ],
         );
-      }, childCount: 10))
+      }, childCount: 1))
     ]);
   }
 }
