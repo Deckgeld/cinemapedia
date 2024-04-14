@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:cinemapedia/domain/entitites/movie.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MovieHorizontalListView extends StatefulWidget {
   final List<Movie> movies;
@@ -27,11 +28,12 @@ class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
   @override
   void initState() {
     super.initState();
-  
+
     scrollController.addListener(() {
       //Si existe la funcion loadNextPage y el scroll llega al final de la pagina, entonces cargamos la siguiente pagina
       if (widget.loadNextPage != null &&
-      scrollController.position.pixels +200 >= scrollController.position.maxScrollExtent) {
+          scrollController.position.pixels + 200 >=
+              scrollController.position.maxScrollExtent) {
         widget.loadNextPage!();
       }
     });
@@ -84,6 +86,8 @@ class _Slide extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
+
           //* Image
           SizedBox(
             width: 150,
@@ -95,11 +99,18 @@ class _Slide extends StatelessWidget {
                 width: 150,
                 height: 225,
                 loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return FadeIn(child: child);
+                  //Si no se ha cargado la imagen mostramos un CircularProgressIndicator sino mostramos la imagen
+                  if (loadingProgress != null) {
+                    return const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
 
-                  return const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Center(child: CircularProgressIndicator()),
+                  //La imagen puede redireccionar a la pantalla de detalles de la pelicula
+                  return GestureDetector(
+                    child: FadeIn(child: child),
+                    onTap: () => context.push('/movie/${movie.id}'),
                   );
                 },
               ),
