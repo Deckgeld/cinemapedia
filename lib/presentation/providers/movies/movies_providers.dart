@@ -35,9 +35,11 @@ final upcomingMoviesProvider = StateNotifierProvider<MoviesNotifier, List<Movie>
   );
 });
 
+
+
+
 //Tipamos la funcion que requiere como parametro
 typedef MovieCallBack = Future<List<Movie>> Function({int page});
-
 
 class MoviesNotifier extends StateNotifier<List<Movie>> {
 
