@@ -1,3 +1,4 @@
+import 'package:cinemapedia/infrastructure/models/movie_details.dart';
 import 'package:dio/dio.dart';
 
 import 'package:cinemapedia/config/constants/enviroment.dart';
@@ -16,6 +17,7 @@ class MoviesDataSourceImpl extends MoviesDataSource {
         'language': 'es-MX'
       }));
 
+  //metodo para convertir un MovieDbResponse a una lista de Movie
   List<Movie> _jsonToMoviesList( Map<String, dynamic> json) {
     final movieDBResponse = MovieDbResponse.fromJson(json);
 
@@ -69,6 +71,16 @@ class MoviesDataSourceImpl extends MoviesDataSource {
       });
 
     return _jsonToMoviesList(response.data);
+  }
+  
+  @override
+  Future<Movie> getMovieDetail( String movieId ) async {
+    final response = await dio.get('/movie/$movieId');
+    if (response.statusCode != 200) throw Exception('Mvie with id $movieId not found');
+
+      final movieDB = MovieDetails.fromJson(response.data);
+
+      return MovieMapper.movieDetailsToEntity(movieDB);
   }
   
 }
