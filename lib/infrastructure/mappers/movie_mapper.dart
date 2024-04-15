@@ -23,7 +23,7 @@ class MovieMapper {
         //Esto no sirve para filtrar las peliculas, dentro de moviedb_datasource.dart
         : 'no-poster',
       
-      releaseDate: movieDB.releaseDate,
+      releaseDate: movieDB.releaseDate != null ? movieDB.releaseDate! : DateTime.now(),
       title: movieDB.title,
       video: movieDB.video,
       voteAverage: movieDB.voteAverage,
