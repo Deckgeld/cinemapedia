@@ -1,7 +1,9 @@
+import 'package:cinemapedia/domain/entitites/movie.dart';
 import 'package:cinemapedia/presentation/delegates/search_movie_delegate.dart';
 import 'package:cinemapedia/presentation/providers/movies/movies_repository_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomAppbar extends ConsumerWidget {
   const CustomAppbar({super.key});
@@ -34,14 +36,21 @@ class CustomAppbar extends ConsumerWidget {
               onPressed: () {
                 final movieRepository = ref.read(movieRepositoryProvider);
 
-                showSearch(
-                  context: context,
-                  //delegate es el objeto que se encarga de manejar la busqueda
-                  delegate: SearchMovieDelegate( 
-                    //no estamos creando un provider nuevo, estamos pasando el movieRepository que ya creamos
-                    searchMovies: movieRepository.searchMovies
-                  )
-              );
+                //showSearch es un metodo que nos permite mostrar un search delegate
+                //Devuelve un Future<Movie?>, que es el movie seleccionado
+                //Al finalizar la busqueda, se ejecuta el metodo then, que nos lleva a la pantalla de detalles de la pelicula
+                showSearch<Movie?>(
+                        context: context,
+                        //delegate es el objeto que se encarga de manejar la busqueda
+                        delegate: SearchMovieDelegate(
+                            //no estamos creando un provider nuevo, estamos pasando el movieRepository que ya creamos
+                            searchMovies: movieRepository.searchMovies))
+                .then((movie) {
+                  //si movie es null, no hacemos nada
+                  if (movie == null) return;
+
+                  context.push('/movie/${movie.id}');
+                });
               },
             )
           ],
