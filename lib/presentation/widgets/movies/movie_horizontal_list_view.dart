@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:cinemapedia/domain/entitites/movie.dart';
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -133,10 +134,11 @@ class _Slide extends StatelessWidget {
             width: 150,
             child: Row(
               children: [
-                Icon(Icons.star, size: 16, color: Colors.yellow.shade800),
-                Text('${movie.voteAverage}',
-                    style: textStyle.bodyMedium
-                        ?.copyWith(color: Colors.yellow.shade800)),
+                Text(
+                      HumanFormats.number( movie.voteAverage, 1 ),
+                      style: textStyle.bodySmall
+                    ),
+                MovieRatingBar(movieRating: movie.voteAverage, itemSize: 12.0,),
 
                 //Para poder agreagr el Spacer envolveremos el Row en un sizedBox y definirle un width
                 const Spacer(),
