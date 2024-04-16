@@ -8,7 +8,7 @@ class ActorMapper {
       name: cast.name,
       profilePath: cast.profilePath != null 
         ? 'https://image.tmdb.org/t/p/w500${cast.profilePath}'
-        : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png',
+        : 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgeekwebsolution.com%2Fwp-content%2Fuploads%2F2020%2F06%2Fuser_face.jpg&f=1&nofb=1&ipt=f3f0b5f352ea944d468e383a331b14709a1536fcfc60129170322eff1172217f&ipo=images',
       character: cast.character
     );
   }

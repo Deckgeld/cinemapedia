@@ -21,7 +21,7 @@ class MovieMapper {
       //ODIO ESTA LINEA
         ? 'https://image.tmdb.org/t/p/w500${movieDB.posterPath}' 
         //Esto no sirve para filtrar las peliculas, dentro de moviedb_datasource.dart
-        : 'no-poster',
+        : 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.istockphoto.com%2Fvectors%2Fno-image-available-sign-vector-id1138179183%3Fk%3D6%26m%3D1138179183%26s%3D612x612%26w%3D0%26h%3DprMYPP9mLRNpTp3XIykjeJJ8oCZRhb2iez6vKs8a8eE%3D&f=1&nofb=1&ipt=ffb8f9315d1ed861f2ee216c3b6dfab0c59149e020b31b6259f261458c80ff2b&ipo=images',
       
       releaseDate: movieDB.releaseDate != null ? movieDB.releaseDate! : DateTime.now(),
       title: movieDB.title,
