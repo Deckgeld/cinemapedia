@@ -111,7 +111,7 @@ class _Slide extends StatelessWidget {
                   //La imagen puede redireccionar a la pantalla de detalles de la pelicula
                   return GestureDetector(
                     child: FadeIn(child: child),
-                    onTap: () => context.push('/movie/${movie.id}'),
+                    onTap: () => context.push('/home/0/movie/${movie.id}'),
                   );
                 },
               ),
