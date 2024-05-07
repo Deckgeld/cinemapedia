@@ -10,11 +10,13 @@ typedef SearchMoviesCallback = Future<List<Movie>> Function(String query);
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviesCallback searchMovies;
-  final List<Movie> initialMovies;
+  List<Movie> initialMovies;
 
   //debounceMovies es un StreamController que nos permite controlar cuando hacer las petciones
   //Se puede hacer con paquetes como rxdart, pero en este caso lo haremos nosotros mismos
   StreamController<List<Movie>> debounceMovies = StreamController.broadcast();
+  StreamController<bool> isLoadingStream = StreamController.broadcast();
+
   Timer? _debounceTimmer;
 
   SearchMovieDelegate({
@@ -24,19 +26,49 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   void clearStrams() {
     debounceMovies.close();
+    isLoadingStream.close();
   }
 
   //onQueryChanged es un metodo que se encarga de hacer la peticion de las peliculas
-  void onQueryChanged(String query) {
+  void _onQueryChanged(String query) {
+    isLoadingStream.add(true);
+
     if (_debounceTimmer?.isActive ?? false) _debounceTimmer?.cancel();
 
     _debounceTimmer = Timer(const Duration(milliseconds: 500), () async {
-
       //if (query.isEmpty) return debounceMovies.add([]);
 
       final movies = await searchMovies(query);
       debounceMovies.add(movies);
+      initialMovies = movies;
+
+      isLoadingStream.add(false);
     });
+  }
+
+  Widget buildResultsAndSuggestions() {
+    // future: searchMovies(query),
+    return StreamBuilder(
+      //son las peliculas que se guardaran en cache
+      initialData: initialMovies,
+      stream: debounceMovies.stream,
+      builder: (context, snapshot) {
+        //ten cuidado porque cada vez que se escribe algo en el campo de busqueda, se hace una peticion
+
+        final movies = snapshot.data ?? [];
+
+        return ListView.builder(
+          itemCount: movies.length,
+          itemBuilder: (context, index) => _MoviesItem(
+              movie: movies[index],
+              //close es un metodo que nos permite cerrar el search delegate
+              onMovieSelected: (context, movie) {
+                clearStrams();
+                close(context, movie);
+              }),
+        );
+      },
+    );
   }
 
   @override
@@ -47,14 +79,32 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   //buildActions es el metodo que se encarga de mostrar los widgets que se van a mostrar en la parte derecha del appbar
   List<Widget>? buildActions(BuildContext context) {
     return [
-      FadeIn(
-        //animate es un booleano que nos permite saber si el widget se debe animar o no
-        animate: query.isNotEmpty,
-        child: IconButton(
-          onPressed: () => query = '',
-          icon: const Icon(Icons.clear),
-        ),
-      )
+
+      StreamBuilder(
+          initialData: false,
+          stream: isLoadingStream.stream,
+          builder: (context, snapshot) {
+            //si snapshot.data es true, se mostrara un icono de refresh
+            if (snapshot.data ?? false) {
+              return SpinPerfect(
+                duration: const Duration(seconds: 1),
+                infinite: true,
+                spins: 10,
+                child: IconButton(
+                  onPressed: () => query = '',
+                  icon: const Icon(Icons.refresh_rounded),
+                ),
+              );
+            }
+            return FadeIn(
+              //animate es un booleano que nos permite saber si el widget se debe animar o no
+              animate: query.isNotEmpty,
+              child: IconButton(
+                onPressed: () => query = '',
+                icon: const Icon(Icons.clear),
+              ),
+            );
+          }),
     ];
   }
 
@@ -73,39 +123,14 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   @override
   //buildResults es el metodo que se encarga de mostrar los resultados cuando la persona presiona enter
   Widget buildResults(BuildContext context) {
-    return const Text('buildResults');
+    return buildResultsAndSuggestions();
   }
 
   @override
   //buildSuggestions es el metodo que se encarga de mostrar las sugerencias de la busqueda, cuando la persona esta escribiendo
   Widget buildSuggestions(BuildContext context) {
-    onQueryChanged(query);
-
-    return StreamBuilder(
-      //son las peliculas que se guardaran en cache
-      initialData: initialMovies,
-      // future: searchMovies(query),
-      stream: debounceMovies.stream,
-      builder: (context, snapshot) {
-        //ten cuidado porque cada vez que se escribe algo en el campo de busqueda, se hace una peticion
-        //! print('Realizando peticion')
-
-        final movies = snapshot.data ?? [];
-
-        return ListView.builder(
-          itemCount: movies.length,
-          itemBuilder: (context, index) => _MoviesItem(
-            movie: movies[index],
-            //close es un metodo que nos permite cerrar el search delegate
-            onMovieSelected: (context, movie) {
-              clearStrams();
-              close(context, movie);
-            } 
-              
-          ),
-        );
-      },
-    );
+    _onQueryChanged(query);
+    return buildResultsAndSuggestions();
   }
 }
 
