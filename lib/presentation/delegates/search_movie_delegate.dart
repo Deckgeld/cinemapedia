@@ -10,13 +10,17 @@ typedef SearchMoviesCallback = Future<List<Movie>> Function(String query);
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviesCallback searchMovies;
+  final List<Movie> initialMovies;
 
   //debounceMovies es un StreamController que nos permite controlar cuando hacer las petciones
   //Se puede hacer con paquetes como rxdart, pero en este caso lo haremos nosotros mismos
   StreamController<List<Movie>> debounceMovies = StreamController.broadcast();
   Timer? _debounceTimmer;
 
-  SearchMovieDelegate({required this.searchMovies});
+  SearchMovieDelegate({
+    required this.searchMovies,
+    required this.initialMovies,
+  });
 
   void clearStrams() {
     debounceMovies.close();
@@ -27,7 +31,8 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     if (_debounceTimmer?.isActive ?? false) _debounceTimmer?.cancel();
 
     _debounceTimmer = Timer(const Duration(milliseconds: 500), () async {
-      if (query.isEmpty) return debounceMovies.add([]);
+
+      //if (query.isEmpty) return debounceMovies.add([]);
 
       final movies = await searchMovies(query);
       debounceMovies.add(movies);
@@ -77,6 +82,8 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     onQueryChanged(query);
 
     return StreamBuilder(
+      //son las peliculas que se guardaran en cache
+      initialData: initialMovies,
       // future: searchMovies(query),
       stream: debounceMovies.stream,
       builder: (context, snapshot) {
