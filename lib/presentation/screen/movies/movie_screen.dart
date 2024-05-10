@@ -6,7 +6,6 @@ import 'package:cinemapedia/domain/entitites/movie.dart';
 import 'package:cinemapedia/presentation/providers/movies/movie_info_provider.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 
-
 class MovieScreen extends ConsumerStatefulWidget {
   static const String name = 'movie-screen';
 
@@ -216,6 +215,11 @@ class _CustomSliverAppBar extends StatelessWidget {
         backgroundColor: Colors.black,
         expandedHeight: size.height * 0.7,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border)
+              //  icon: const Icon(Icons.favorite_rounded, color: Colors.red)
+              )
+        ],
         flexibleSpace: FlexibleSpaceBar(
           //Eliminamos el title porque las poster ya tienen el titulo
 
@@ -236,40 +240,51 @@ class _CustomSliverAppBar extends StatelessWidget {
 
               //2 gradientes para oscurecer la imagen
               // * gradientes
-              const SizedBox.expand(
-                //DecoratedBox es un widget que nos permite decorar otro widget
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      //gradient es una propiedad que nos permite poner el gradiente, en este caso un LinearGradient
-                      gradient: LinearGradient(
-                          //begin y end son los puntos de inicio y fin del gradiente
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          //stops es para indicar en que punto del gradiente se va a poner el color, en este caso en el 70% y 100%
-                          stops: [0.7, 1.0],
-                          //colors es para indicar los colores del gradiente
-                          colors: [Colors.transparent, Colors.black87])),
-                ),
-              ),
+              const _CustomGradient(
+                begin: Alignment.topCenter, 
+                end: Alignment.bottomCenter, 
+                stops: [0.7, 1.0],
+                colors: [Colors.transparent, Colors.black54]),
 
-              const SizedBox.expand(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          // end: Alignment.bottomCenter,
-                          stops: [
-                        0.0,
-                        0.3
-                      ],
-                          colors: [
-                        Colors.black87,
-                        Colors.transparent,
-                      ])),
-                ),
-              ),
+              const _CustomGradient(
+                begin: Alignment.topLeft, 
+                stops: [0.0, 0.2],
+                colors: [Colors.black54, Colors.transparent]),
+
+              const _CustomGradient(
+                begin: Alignment.topRight, 
+                end: Alignment.bottomLeft, 
+                stops: [0.0, 0.2],
+                colors: [Colors.black54, Colors.transparent])
             ],
           ),
         ));
+  }
+}
+
+class _CustomGradient extends StatelessWidget {
+  final AlignmentGeometry begin;
+  final AlignmentGeometry end;
+  final List<double> stops;
+  final List<Color> colors;
+
+  const _CustomGradient({
+      this.begin = Alignment.centerLeft,
+      this.end = Alignment.centerRight,
+      required this.stops,
+      required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.expand(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: begin,
+                end: end,
+                stops: stops,
+                colors: colors)),
+      ),
+    );
   }
 }
