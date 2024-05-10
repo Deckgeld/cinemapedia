@@ -14,7 +14,7 @@ class MoviesDataSourceImpl extends MoviesDataSource {
       baseUrl: 'https://api.themoviedb.org/3',
       queryParameters: {
         'api_key': Environment.theMovieDbKey,
-        'language': 'es-MX'
+        // 'language': 'es-MX'
       }));
 
   //metodo para convertir un MovieDbResponse a una lista de Movie
