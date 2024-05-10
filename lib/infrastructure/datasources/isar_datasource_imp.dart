@@ -7,7 +7,7 @@ class IsarDatasourceImp implements LocalStorageDatasource {
   ///Necesarias para la implementación de Isar
   late Future<Isar> db;
 
-  IsarDatasource() {
+  IsarDatasourceImp() {
     db = openDB();
   }
 
@@ -64,10 +64,10 @@ class IsarDatasourceImp implements LocalStorageDatasource {
     
     if (favoriteMovie != null) {
       //las transacciones son necesarias para modificar la base de datos
-      isar.writeTxnSync(() => isar.movies.delete(favoriteMovie.isarId!));
+      isar.writeTxnSync(() => isar.movies.deleteSync(favoriteMovie.isarId!));
     } else {
       //Tx = Transacción
-      isar.writeTxnSync(() => isar.movies.put(movie));
+      isar.writeTxnSync(() => isar.movies.putSync(movie));
     }
   }
 }

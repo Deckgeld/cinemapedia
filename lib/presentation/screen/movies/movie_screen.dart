@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
 
 import 'package:cinemapedia/domain/entitites/movie.dart';
-import 'package:cinemapedia/presentation/providers/movies/movie_info_provider.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 
 class MovieScreen extends ConsumerStatefulWidget {
@@ -202,13 +201,23 @@ class _ActorsByMovie extends ConsumerWidget {
     );
   }
 }
+//.family nos permite pasar un parametro al provaider
+//tambien esta el .autoDispose que se encarga de liberar la memoria cuando ya no se necesita
+final isFavoriteProvider = FutureProvider.family.autoDispose((ref, int movieId) async {
+  final isFavorite = await ref.watch(localStorageRepositoryProvider).isMovieFavorite(movieId);
+  return isFavorite;
 
-class _CustomSliverAppBar extends StatelessWidget {
+});
+
+class _CustomSliverAppBar extends ConsumerWidget {
   final Movie movie;
   const _CustomSliverAppBar({required this.movie});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+
+  final isFavoriteFuture = ref.watch(isFavoriteProvider(movie.id));
+
     final size = MediaQuery.of(context).size;
 
     return SliverAppBar(
@@ -216,8 +225,22 @@ class _CustomSliverAppBar extends StatelessWidget {
         expandedHeight: size.height * 0.7,
         foregroundColor: Colors.white,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border)
-              //  icon: const Icon(Icons.favorite_rounded, color: Colors.red)
+          IconButton(
+              onPressed: () {
+                ref.watch(localStorageRepositoryProvider).toggleFavorite(movie);
+                
+                //se invalida el provider para que se vuelva a cargar el estado, ya que es un futureProvider
+                ref.invalidate(isFavoriteProvider(movie.id));
+              },
+              icon: isFavoriteFuture.when(
+                data: (isFavorite) => isFavorite 
+                  ? const Icon( Icons.favorite_rounded, color: Colors.red )
+                  : const Icon( Icons.favorite_border),
+                loading: () => const CircularProgressIndicator(strokeWidth: 2),
+                error: (_, __) => throw UnimplementedError()
+              )
+              // const Icon(Icons.favorite_border)
+              //  icon: const Icon()
               )
         ],
         flexibleSpace: FlexibleSpaceBar(
@@ -241,21 +264,21 @@ class _CustomSliverAppBar extends StatelessWidget {
               //2 gradientes para oscurecer la imagen
               // * gradientes
               const _CustomGradient(
-                begin: Alignment.topCenter, 
-                end: Alignment.bottomCenter, 
-                stops: [0.7, 1.0],
-                colors: [Colors.transparent, Colors.black54]),
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.7, 1.0],
+                  colors: [Colors.transparent, Colors.black54]),
 
               const _CustomGradient(
-                begin: Alignment.topLeft, 
-                stops: [0.0, 0.2],
-                colors: [Colors.black54, Colors.transparent]),
+                  begin: Alignment.topLeft,
+                  stops: [0.0, 0.2],
+                  colors: [Colors.black54, Colors.transparent]),
 
               const _CustomGradient(
-                begin: Alignment.topRight, 
-                end: Alignment.bottomLeft, 
-                stops: [0.0, 0.2],
-                colors: [Colors.black54, Colors.transparent])
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  stops: [0.0, 0.2],
+                  colors: [Colors.black54, Colors.transparent])
             ],
           ),
         ));
@@ -268,8 +291,8 @@ class _CustomGradient extends StatelessWidget {
   final List<double> stops;
   final List<Color> colors;
 
-  const _CustomGradient({
-      this.begin = Alignment.centerLeft,
+  const _CustomGradient(
+      {this.begin = Alignment.centerLeft,
       this.end = Alignment.centerRight,
       required this.stops,
       required this.colors});
@@ -280,10 +303,7 @@ class _CustomGradient extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: begin,
-                end: end,
-                stops: stops,
-                colors: colors)),
+                begin: begin, end: end, stops: stops, colors: colors)),
       ),
     );
   }
