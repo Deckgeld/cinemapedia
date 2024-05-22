@@ -1,30 +1,69 @@
-import 'package:cinemapedia/presentation/views/home_views/favorites_view.dart';
-import 'package:cinemapedia/presentation/views/home_views/home_view.dart';
 import 'package:flutter/material.dart';
-import 'package:cinemapedia/presentation/widgets/widgets.dart';
 
-class HomeScreen extends StatelessWidget {
-  static const String name = 'home-screen';
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
+import 'package:cinemapedia/presentation/views/views.dart';
+
+
+
+class HomeScreen extends StatefulWidget {
+
+  static const name = 'home-screen';
   final int pageIndex;
 
   const HomeScreen({
-    super.key,
-    required this.pageIndex,
+    super.key, 
+    required this.pageIndex
   });
 
-  final viewRoutes = const <Widget>[
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  late PageController pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController(
+      keepPage: true
+    );
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  final viewRoutes =  const <Widget>[
     HomeView(),
-    FavoritesView()
+    FavoritesView(),
   ];
 
   @override
   Widget build(BuildContext context) {
+
+    if ( pageController.hasClients ) {
+      pageController.animateToPage(
+        widget.pageIndex, 
+        curve: Curves.easeInOut, 
+        duration: const Duration( milliseconds: 250),
+      );
+    }
+
     return Scaffold(
-      //cambiamos el indexedStack por un page view para poder agregarle funcionalidad 
-        body: PageView(
-          children: viewRoutes,
-        ), 
-        bottomNavigationBar: CustomBottomNavigation( currentIndex: pageIndex)
+      body: PageView(
+        //* Esto evitará que rebote 
+        physics: const NeverScrollableScrollPhysics(),
+        controller: pageController,
+        // index: pageIndex,
+        children: viewRoutes,
+      ),
+      bottomNavigationBar: CustomBottomNavigation( 
+        currentIndex: widget.pageIndex,
+      ),
     );
   }
 }
