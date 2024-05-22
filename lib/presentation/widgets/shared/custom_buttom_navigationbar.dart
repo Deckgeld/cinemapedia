@@ -15,10 +15,7 @@ class CustomBottomNavigation extends StatelessWidget {
         context.go('/home/0');
         break;
       case 1:
-        GoRouter.of(context).go('/home/1');
-        break;
-      case 2:
-        context.go('/home/2');
+        context.go('/home/1');
         break;
       default:
     }
@@ -34,10 +31,6 @@ class CustomBottomNavigation extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.home_max),
           label: 'Home'
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.label_outline),
-          label: 'Categories'
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.favorite_outline),

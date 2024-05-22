@@ -14,19 +14,15 @@ class HomeScreen extends StatelessWidget {
 
   final viewRoutes = const <Widget>[
     HomeView(),
-    SizedBox(),
     FavoritesView()
-    
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //indexedStack nos permite tener un stack de widgets y mostrar solo uno a la vez, sin perder el estado de los demas
-        body: IndexedStack(
-          index: pageIndex,
+      //cambiamos el indexedStack por un page view para poder agregarle funcionalidad 
+        body: PageView(
           children: viewRoutes,
-        
         ), 
         bottomNavigationBar: CustomBottomNavigation( currentIndex: pageIndex)
     );

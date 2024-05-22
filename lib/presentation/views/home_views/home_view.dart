@@ -14,7 +14,7 @@ class HomeView extends ConsumerStatefulWidget {
       HomeViewState(); //cambio de State<_HomeView> a _HomeViewState
 }
 
-class HomeViewState extends ConsumerState<HomeView> {
+class HomeViewState extends ConsumerState<HomeView> with AutomaticKeepAliveClientMixin{
   //cambio de State<_HomeView> a ConsumerState<_HomeView>
   @override
   void initState() {
@@ -28,6 +28,7 @@ class HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final initialLoading = ref.watch(initialLoadingProvider);
     if(initialLoading) return const FullScreenLoader();
 
@@ -90,4 +91,7 @@ class HomeViewState extends ConsumerState<HomeView> {
       }, childCount: 1))
     ]);
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }
